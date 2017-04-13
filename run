@@ -1,0 +1,58 @@
+#! /bin/bash
+# This script is meant to evoke the algorithm without requiring any input arguments
+#
+
+# Define directory names and containers
+FLYWHEEL_BASE=/flywheel/v0
+INPUT_DIR=$FLYWHEEL_BASE/input/inspiration
+OUTPUT_DIR=$FLYWHEEL_BASE/output
+CONFIG_FILE=$FLYWHEEL_BASE/config.json
+MANIFEST_FILE=$FLYWHEEL_BASE/manifest.json
+CONTAINER='[flywheel/lda-insp]'
+
+# Check if the input directory is not empty
+if [[ "$(ls -A $INPUT_DIR)" ]] ; then
+    echo "$CONTAINER  Starting..."
+else
+    echo "Input directory is empty: $INPUT_DIR"
+    exit 1
+fi
+
+# Find input file in input directory with the extension .zip, signifies zipped dir of DICOM files
+input_file=`find $INPUT_DIR -iname '*.zip'`
+# Check if input file exists
+if [[ -e $input_file ]] ; then
+    echo "Unzipping DICOM files"
+    DICOM_DIR=$FLYWHEEL_BASE/input/dicom
+    unzip $input_file -d $INPUT_DIR
+else
+    echo "DICOM inputs were not found within input directory $INPUT_DIR"
+    exit 1
+fi
+
+# Get inspiration threshold from config file if present
+if [[ -e $CONFIG_FILE ]] ; then
+    echo "Config file is present"
+    ins_thresh=`cat $CONFIG_FILE | jq -r '.config.ins_thresh'`
+else
+    echo "Config file is not present, using default value"
+    ins_thresh=`cat $MANIFEST_FILE | jq -r '.config.ins_thresh.default'`
+fi
+
+## Run the algorithm
+/usr/local/bin/run_thresh_ct_lungs -i $INPUT_DIR -o $OUTPUT_DIR --ithresh $ins_thresh --research-label -d
+
+# TODO: cleanup some of the outputs?
+
+# Get a list of the files in the output directory
+outputs=`find $OUTPUT_DIR -type f -name "*"`
+
+# If outputs exist, then go on...
+if [[ -z $outputs ]] ; then
+    echo "No results found in output directory... Exiting"
+    exit 1
+else
+    chmod -R 777 $OUTPUT_DIR
+    echo -e "Wrote: `ls $OUTPUT_DIR`"
+fi
+exit 0
