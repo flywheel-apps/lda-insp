@@ -20,10 +20,13 @@ fi
 
 # Find input file in input directory with the extension .zip, signifies zipped dir of DICOM files
 input_file=`find $INPUT_DIR -iname '*.zip'`
+bni=`basename "$input_file"`
+filename="${bni%%.*}"
+
 # Check if input file exists
 if [[ -e $input_file ]] ; then
     echo "Unzipping DICOM files"
-    unzip $input_file -d $INPUT_DIR
+    unzip "$input_file" -d $INPUT_DIR
 else
     echo "DICOM inputs were not found within input directory $INPUT_DIR"
     exit 1
@@ -41,11 +44,40 @@ fi
 ## Run the algorithm
 /usr/local/bin/run_thresh_ct_lungs -i $INPUT_DIR -o $OUTPUT_DIR --ithresh $ins_thresh --research-label -d
 
-# TODO: cleanup some of the outputs?
+# Remove some extra files and directories
+for extrafile in 'ins_label_stats' 'lda_stats' 'report_ins_only.json' 'report_ins_only_pdf' 'stdout.log'
+do
+    extrafile_full=$OUTPUT_DIR/$extrafile
+    if [[ -e $extrafile_full ]]; then
+        rm -rf $extrafile_full
+    fi
+done
 
-# Get a list of the files in the output directory
+# Zip up DICOM file
+dicom_dir="$OUTPUT_DIR/lda_ins_only"
+if [[ -e $dicom_dir ]] ; then
+    zip -r $OUTPUT_DIR/"$filename"'_lda_insp.dcm.zip' $dicom_dir
+    rm -rf $dicom_dir
+fi
+
+# Rename pdf file
+report_ins_only_pdf_file="$OUTPUT_DIR/report_ins_only.pdf"
+if [[ -e $report_ins_only_pdf_file ]] ; then
+    mv $report_ins_only_pdf_file $OUTPUT_DIR/"$filename"'_lda_insp.pdf'
+fi
+# Rename histogram.csv
+histogram_csv_file="$OUTPUT_DIR/histograms.csv"
+if [[ -e $histogram_csv_file ]] ; then
+    mv $histogram_csv_file $OUTPUT_DIR/"$filename"'_lda_insp_hist.csv'
+fi
+# Rename histogram.csv
+report_csv_file="$OUTPUT_DIR/report_ins_only.csv"
+if [[ -e $report_csv_file ]] ; then
+    mv $report_csv_file $OUTPUT_DIR/"$filename"'_lda_insp_report.csv'
+fi
+
+## Get a list of the files in the output directory
 outputs=`find $OUTPUT_DIR -type f -name "*"`
-
 # If outputs exist, then go on...
 if [[ -z $outputs ]] ; then
     echo "No results found in output directory... Exiting"

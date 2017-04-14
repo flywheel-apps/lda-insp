@@ -19,7 +19,7 @@
             }
         }
     }, 
-    "label": "LDA Inspiration Assessment", 
+    "label": "LDA Inspiration Assessment (v2.4.3)", 
     "license": "Other", 
     "maintainer": "Jennifer Reiter <jenniferreiter@invenshure.com>", 
     "name": "lda-insp", 

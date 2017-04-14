@@ -5,7 +5,8 @@ FROM imbio/ldarelease:2.4.3
 MAINTAINER Jennifer Reiter <jenniferreiter@invenshure.com>
 
 # Install unzip
-RUN apt-get -y install unzip
+RUN apt-get -y install unzip \
+			zip
 
 # Make directory for flywheel spec (v0)
 ENV FLYWHEEL /flywheel/v0
