@@ -23,7 +23,6 @@ input_file=`find $INPUT_DIR -iname '*.zip'`
 # Check if input file exists
 if [[ -e $input_file ]] ; then
     echo "Unzipping DICOM files"
-    DICOM_DIR=$FLYWHEEL_BASE/input/dicom
     unzip $input_file -d $INPUT_DIR
 else
     echo "DICOM inputs were not found within input directory $INPUT_DIR"
