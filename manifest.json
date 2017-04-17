@@ -1,0 +1,29 @@
+{
+    "author": "Imbio, LLC", 
+    "config": {
+        "ins_thresh": {
+            "default": -950, 
+            "description": "Threshold in Hounsfield Units (HU). Value must be between -1024 and -500 HU", 
+            "type": "integer"
+        }
+    }, 
+    "description": "The LDA Inspiration Assessment Gear provides a full 3D DICOM series with density overlays for detailed interpretation and a quantitative report of density categories by lung region. Lung categories are determined by a user selected threshold, given in HU.", 
+    "inputs": {
+        "inspiration": {
+            "base": "file", 
+            "description": "DICOM series of a full inspiration scan", 
+            "type": {
+                "enum": [
+                    "dicom"
+                ]
+            }
+        }
+    }, 
+    "label": "LDA Inspiration Assessment (v2.4.3)", 
+    "license": "Other", 
+    "maintainer": "Jennifer Reiter <jenniferreiter@invenshure.com>", 
+    "name": "lda-insp", 
+    "source": "https://github.com/flywheel-apps/lda-insp", 
+    "url": "https://imbio.com/lung-density", 
+    "version": "0.0.1"
+}

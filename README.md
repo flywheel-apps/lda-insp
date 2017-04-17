@@ -1,2 +1,2 @@
 # lda-insp
-LDA Inspiration Assessment Gear
+Imbio LDA Inspiration Assessment Gear
